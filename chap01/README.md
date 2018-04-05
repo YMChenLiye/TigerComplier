@@ -1,3 +1,4 @@
+# Usage:
 * mkdir build
 * cd build
 * cmake ..

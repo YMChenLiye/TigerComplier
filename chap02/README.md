@@ -4,3 +4,6 @@
 * cd build
 * cmake ..
 * make
+* cd ..
+* chmod +x test.sh
+* ../test.sh

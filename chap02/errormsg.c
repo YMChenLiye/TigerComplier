@@ -10,7 +10,7 @@ static string fileName = "";
 
 static int lineNum = 1;
 
-int EM_tokPos = 0;
+int EM_tokPos = 0;      //错误token开始的位置
 
 extern FILE * yyin;
 

@@ -13,3 +13,10 @@ void * checked_malloc(int len)
     }
     return p;
 }
+
+string String(char* s)
+{
+    string p = checked_malloc(strlen(s) + 1);
+    strcpy(p, s);
+    return p;
+}

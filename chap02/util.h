@@ -8,7 +8,7 @@ typedef	char * string;
 #define FALSE 0
 
 void * checked_malloc(int);
-//string String(char *);
+string String(char *);
 
 /*
 typedef struct U_boolList_ * U_boolList;

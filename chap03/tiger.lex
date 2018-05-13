@@ -1,7 +1,6 @@
 %{
 #include <string.h>
 #include "util.h"
-//#include "tokens.h"
 #include "y.tab.h"
 #include "errormsg.h"
 
@@ -76,7 +75,7 @@ nil         { adjust(); return NIL; }
 ","         {adjust(); return COMMA;}
 
     /* Identifiers */
-[a-zA-Z][a-zA-Z0-9_]*    { adjust(); yylval.sval=String(yytext); return ID; }
+[a-zA-Z][a-zA-Z0-9_]*    { adjust(); yylval.sval=String(yytext); /*printf("id: %s\n", yytext);*/ return ID; }
 
     /* Integer literal */
 [0-9]+                  { adjust(); yylval.ival=atoi(yytext); return INT; }
@@ -98,7 +97,7 @@ nil         { adjust(); return NIL; }
 <STRING_STATE>
 {
     "\""    { adjust(); BEGIN(INITIAL); return STRING; }
-    [^"]*    { adjust(); yylval.sval=String(yytext); printf("cly,%s\n", yytext); }   
+    [^"]*    { adjust(); yylval.sval=String(yytext); /*printf("string: %s\n", yytext);*/ }   
 }
 
 .    {adjust(); EM_error(EM_tokPos,"illegal token");}

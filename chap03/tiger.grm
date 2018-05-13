@@ -30,14 +30,145 @@ void yyerror(char *s)
   BREAK NIL
   FUNCTION VAR TYPE 
 
-%start program
+%start programs
 
 %%
 
-program:	exp
+programs
+    : /* empty */
+    | program programs
 
-exp:   ID
+program
+    : exp
+    
+exp
+    : STRING
+    | INT
+    | ID
+    | NIL
+    | decs
+    | sequencing
+    | negation
+    | functionCall
+    | arithmetic
+    | comparison
+    | boolean
+    | assignment
+    | ifThenElse
+    | ifThen
+    | While
+    | For
+    | BREAK
+    | Let
+    | Parentheses
 
+Parentheses
+    : LPAREN exp RPAREN 
 
+Let
+    : LET decs IN expseq END
 
+expseq
+    : /* empty */
+    | exp expseq
+
+For
+    : FOR ID ASSIGN exp TO exp DO exp
+
+While
+    : WHILE exp DO exp
+
+ifThenElse
+    : IF exp THEN exp ELSE exp
+
+ifThen
+    : IF exp THEN
+
+assignment
+    : exp ASSIGN exp
+
+boolean
+    : exp booleanOP exp
+
+booleanOP
+    : AND 
+    | OR 
+
+comparison
+    : exp comparisonOP exp
+
+comparisonOP
+    : EQ 
+    | NEQ 
+    | LT 
+    | LE
+    | GT 
+    | GE
+
+arithmetic
+    : exp arithmeticOP exp
+
+arithmeticOP
+    : PLUS
+    | MINUS
+    | TIMES
+    | DIVIDE
+
+functionCall
+    : ID LPAREN functionParam RPAREN
+
+functionParam
+    : exp expList2
+
+expList2
+    : /* empty */
+    | COMMA exp expList2
+
+negation
+    : MINUS INT 
+
+sequencing
+    : LPAREN exp expList RPAREN
+
+expList
+    : /* empty */
+    | SEMICOLON exp expList
+
+decs
+    : /* empty */
+    | dec decs
+
+dec
+    : tydec
+    | vardec
+    | fundec
+
+tydec
+    : TYPE Typeid EQ ty
+
+ty
+    : Typeid
+    | LBRACE tyfields RBRACE
+    | ARRAY OF Typeid 
+
+tyfields
+    : /* empty */
+    | typeKV typeKVList
+
+typeKV
+    : ID COLON Typeid
+
+typeKVList
+    : /* empty */
+    | COMMA typeKV typeKVList 
+
+Typeid
+    : ID
 	
+vardec
+    : VAR ID ASSIGN exp
+    | VAR ID COLON Typeid ASSIGN exp
+
+fundec
+    : FUNCTION ID LPAREN tyfields RPAREN EQ exp
+    | FUNCTION ID LPAREN tyfields RPAREN COLON Typeid EQ exp

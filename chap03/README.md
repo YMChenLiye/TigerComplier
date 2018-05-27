@@ -1,3 +1,3 @@
 # Usage:
-* chmod +x build.sh
-* ./build.sh
+* chmod +x test.sh
+* ./test.sh

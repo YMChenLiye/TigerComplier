@@ -30,145 +30,131 @@ void yyerror(char *s)
   BREAK NIL
   FUNCTION VAR TYPE 
 
-%start programs
+%start program
+
+%nonassoc DO OF
+%nonassoc THEN /* ELSE must come after THEN! */
+%nonassoc ELSE
+%left SEMICOLON
+%left ASSIGN
+%left OR
+%left AND
+%nonassoc EQ NEQ GT LT GE LE
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left UMINUS
+
 
 %%
 
-programs
-    : /* empty */
-    | program programs
-
 program
     : exp
-    
+
 exp
-    : STRING
-    | INT
-    | ID
+    : INT
+    | STRING
+    | LValue
     | NIL
-    | decs
-    | sequencing
-    | negation
-    | functionCall
-    | arithmetic
-    | comparison
-    | boolean
-    | assignment
-    | ifThenElse
-    | ifThen
-    | While
-    | For
+    | MINUS INT
+    | MINUS ID
+    | LPAREN exps RPAREN 
+    | LPAREN RPAREN 
+    | FunctionCall
+    | Arithmetic
+    | Comparison
+    | exp AND exp
+    | exp OR exp
+    | RecordCreation
+    | ArrayCreation
+    | LValue ASSIGN exp
+    | IF exp THEN exp ELSE exp
+    | IF exp THEN exp
+    | WHILE exp DO exp
+    | FOR ID ASSIGN exp TO exp DO exp
     | BREAK
-    | Let
-    | Parentheses
+    | LET DeclarationSequence IN exps END
 
-Parentheses
-    : LPAREN exp RPAREN 
+exps
+    : exp
+    | exps SEMICOLON exp
 
-Let
-    : LET decs IN expseq END
+DeclarationSequence
+    : %empty
+    | DeclarationSequence Declaration
 
-expseq
-    : /* empty */
-    | exp expseq
+Declaration
+    : TypeDeclaration
+    | VarDeclaration
+    | FunctionDeclaration
 
-For
-    : FOR ID ASSIGN exp TO exp DO exp
+TypeDeclaration
+    : TYPE ID EQ OtherType
 
-While
-    : WHILE exp DO exp
+OtherType
+    : ID
+    | LBRACE TypeFields RBRACE
+    | ARRAY OF ID
 
-ifThenElse
-    : IF exp THEN exp ELSE exp
+TypeFields
+    : %empty
+    | TypeKV TypeKVList
 
-ifThen
-    : IF exp THEN
+TypeKV
+    : ID COLON ID
 
-assignment
-    : exp ASSIGN exp
+TypeKVList
+    : %empty
+    | TypeKVList COMMA TypeKV
 
-boolean
-    : exp booleanOP exp
+VarDeclaration
+    : VAR ID ASSIGN exp
+    | VAR ID COLON ID ASSIGN exp
 
-booleanOP
-    : AND 
-    | OR 
+FunctionDeclaration
+    : FUNCTION ID LPAREN TypeFields RPAREN EQ exp
+    | FUNCTION ID LPAREN TypeFields RPAREN COLON ID EQ exp
 
-comparison
-    : exp comparisonOP exp
+LValue
+    : ID LValue_extension
 
-comparisonOP
-    : EQ 
-    | NEQ 
-    | LT 
-    | LE
-    | GT 
-    | GE
+LValue_extension
+    : %empty
+    | DOT ID LValue_extension
+    | LBRACK exp RBRACK LValue_extension
 
-arithmetic
-    : exp arithmeticOP exp
-
-arithmeticOP
-    : PLUS
-    | MINUS
-    | TIMES
-    | DIVIDE
-
-functionCall
-    : ID LPAREN functionParam RPAREN
-
-functionParam
-    : exp expList2
-
-expList2
-    : /* empty */
-    | COMMA exp expList2
-
-negation
-    : MINUS INT 
-
-sequencing
-    : LPAREN exp expList RPAREN
+FunctionCall
+    : ID LPAREN RPAREN 
+    | ID LPAREN expList RPAREN 
 
 expList
-    : /* empty */
-    | SEMICOLON exp expList
+    : exp
+    | expList COMMA exp
 
-decs
-    : /* empty */
-    | dec decs
+Arithmetic
+    : exp PLUS exp
+    | exp MINUS exp
+    | exp TIMES exp
+    | exp DIVIDE exp
 
-dec
-    : tydec
-    | vardec
-    | fundec
+Comparison
+    : exp EQ exp
+    | exp NEQ exp 
+    | exp LT exp
+    | exp LE exp
+    | exp GT exp
+    | exp GE exp
 
-tydec
-    : TYPE Typeid EQ ty
+RecordCreation
+    : ID LBRACE RBRACE
+    | ID LBRACE FieldAssignmentList RBRACE
 
-ty
-    : Typeid
-    | LBRACE tyfields RBRACE
-    | ARRAY OF Typeid 
+FieldAssignmentList
+    : FieldAssignment
+    | FieldAssignmentList COMMA FieldAssignment
 
-tyfields
-    : /* empty */
-    | typeKV typeKVList
+FieldAssignment
+    : ID EQ exp
 
-typeKV
-    : ID COLON Typeid
+ArrayCreation
+    : ID LBRACK exp RBRACK OF exp
 
-typeKVList
-    : /* empty */
-    | COMMA typeKV typeKVList 
-
-Typeid
-    : ID
-	
-vardec
-    : VAR ID ASSIGN exp
-    | VAR ID COLON Typeid ASSIGN exp
-
-fundec
-    : FUNCTION ID LPAREN tyfields RPAREN EQ exp
-    | FUNCTION ID LPAREN tyfields RPAREN COLON Typeid EQ exp

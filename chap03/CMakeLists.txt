@@ -9,16 +9,20 @@ project (parse)
 aux_source_directory(. DIR_SRCS)
 
 
-#add_custom_command(
-#    OUTPUT lex.yy.c
-#    COMMAND flex tiger.lex
-#    DEPENDS tiger.lex
-#)
+add_custom_command(
+    OUTPUT lex.yy.c
+    COMMAND flex ${CMAKE_SOURCE_DIR}/tiger.lex
+    DEPENDS ${CMAKE_SOURCE_DIR}/tiger.lex
+)
 
-#add_custom_target(some_name ALL
-#    DEPENDS lex.yy.c
-#)
+add_custom_command(
+    OUTPUT y.tab.h y.tab.c
+    COMMAND bison -ydv ${CMAKE_SOURCE_DIR}/tiger.grm
+    DEPENDS ${CMAKE_SOURCE_DIR}/tiger.grm
+)
+
+include_directories(SYSTEM "${CMAKE_SOURCE_DIR}")
 
 # 指定生成目标
-add_executable(parse ${DIR_SRCS})
+add_executable(parse ${DIR_SRCS} lex.yy.c y.tab.c)
 

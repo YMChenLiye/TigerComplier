@@ -1,9 +1,9 @@
 %{
 #include <stdio.h>
 #include "util.h"
-#include "symbol.h" 
 #include "errormsg.h"
 #include "absyn.h"
+#include "symbol.h" 
 
 int yylex(void); /* function prototype */
 
@@ -20,9 +20,9 @@ void yyerror(char *s)
 	int pos;
 	int ival;
 	string sval;
-	A_var var;
-	A_exp exp;
-	/* et cetera */
+    A_var var;
+    A_exp exp;
+    /* et cetera */
 	}
 
 %token <sval> ID STRING
@@ -42,12 +42,129 @@ void yyerror(char *s)
 
 %start program
 
+%nonassoc DO OF
+%nonassoc THEN /* ELSE must come after THEN! */
+%nonassoc ELSE
+%left SEMICOLON
+%left ASSIGN
+%left OR
+%left AND
+%nonassoc EQ NEQ GT LT GE LE
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left UMINUS
+
+
 %%
 
-program:   exp    {absyn_root=$1;}
+program
+    : exp       { absyn_root=$1; }
 
-exp:   ID         {$$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1)));}
+exp
+    : INT
+    | STRING
+    | LValue
+    | NIL
+    | MINUS INT
+    | MINUS ID
+    | LPAREN exps RPAREN 
+    | LPAREN RPAREN 
+    | FunctionCall
+    | Arithmetic
+    | Comparison
+    | exp AND exp
+    | exp OR exp
+    | RecordCreation
+    | ArrayCreation
+    | LValue ASSIGN exp
+    | IF exp THEN exp ELSE exp
+    | IF exp THEN exp
+    | WHILE exp DO exp
+    | FOR ID ASSIGN exp TO exp DO exp
+    | BREAK
+    | LET DeclarationSequence IN exps END
 
+exps
+    : exp
+    | exps SEMICOLON exp
 
+DeclarationSequence
+    : %empty
+    | DeclarationSequence Declaration
 
-	
+Declaration
+    : TypeDeclaration
+    | VarDeclaration
+    | FunctionDeclaration
+
+TypeDeclaration
+    : TYPE ID EQ OtherType
+
+OtherType
+    : ID
+    | LBRACE TypeFields RBRACE
+    | ARRAY OF ID
+
+TypeFields
+    : %empty
+    | TypeKV TypeKVList
+
+TypeKV
+    : ID COLON ID
+
+TypeKVList
+    : %empty
+    | TypeKVList COMMA TypeKV
+
+VarDeclaration
+    : VAR ID ASSIGN exp
+    | VAR ID COLON ID ASSIGN exp
+
+FunctionDeclaration
+    : FUNCTION ID LPAREN TypeFields RPAREN EQ exp
+    | FUNCTION ID LPAREN TypeFields RPAREN COLON ID EQ exp
+
+LValue
+    : ID LValue_extension
+
+LValue_extension
+    : %empty
+    | DOT ID LValue_extension
+    | LBRACK exp RBRACK LValue_extension
+
+FunctionCall
+    : ID LPAREN RPAREN 
+    | ID LPAREN expList RPAREN 
+
+expList
+    : exp
+    | expList COMMA exp
+
+Arithmetic
+    : exp PLUS exp
+    | exp MINUS exp
+    | exp TIMES exp
+    | exp DIVIDE exp
+
+Comparison
+    : exp EQ exp
+    | exp NEQ exp 
+    | exp LT exp
+    | exp LE exp
+    | exp GT exp
+    | exp GE exp
+
+RecordCreation
+    : ID LBRACE RBRACE
+    | ID LBRACE FieldAssignmentList RBRACE
+
+FieldAssignmentList
+    : FieldAssignment
+    | FieldAssignmentList COMMA FieldAssignment
+
+FieldAssignment
+    : ID EQ exp
+
+ArrayCreation
+    : ID LBRACK exp RBRACK OF exp
+

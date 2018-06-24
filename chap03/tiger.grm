@@ -83,9 +83,17 @@ DeclarationSequence
     | DeclarationSequence Declaration
 
 Declaration
-    : TypeDeclaration
+    : TypeDeclarations
     | VarDeclaration
-    | FunctionDeclaration
+    | FunctionDeclarations
+
+TypeDeclarations
+    : TypeDeclaration
+    | TypeDeclarations TypeDeclaration
+
+FunctionDeclarations
+    : FunctionDeclaration
+    | FunctionDeclarations FunctionDeclaration
 
 TypeDeclaration
     : TYPE ID EQ OtherType

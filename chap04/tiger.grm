@@ -22,6 +22,18 @@ void yyerror(char *s)
 	string sval;
     A_var var;
     A_exp exp;
+    A_dec dec;
+    A_ty ty;
+    A_decList decList;
+    A_expList expList;
+    A_field field;
+    A_fieldList fieldList;
+    A_fundec fundec;
+    A_fundecList fundecList;
+    A_namety namety;
+    A_nametyList nametyList;
+    A_efield efield;
+    A_efieldList efieldList;
     /* et cetera */
 	}
 
@@ -37,8 +49,82 @@ void yyerror(char *s)
   BREAK NIL
   FUNCTION VAR TYPE 
 
-%type <exp> exp program
+%type <var> LValue LValue_extension
+%type <exp> exp program FunctionCall
+%type <dec> Declaration VarDeclaration
+%type <ty> OtherType
+%type <decList> DeclarationSequence
+%type <expList> expList
+%type <field> TypeKV
+%type <fieldList> TypeFields TypeKVList
+%type <fundec> FunctionDeclaration
+%type <fundecList> FunctionDeclarations
+%type <namety> TypeDeclaration
+%type <nametyList> TypeDeclarations
+%type <efield> FieldAssignment
+%type <efieldList> FieldAssignmentList
+
 /* et cetera */
+
+%{
+A_var GetNext(A_var pCurrent)
+{
+    if(pCurrent->kind == A_simpleVar)
+    {
+        fprintf(stdout, "error, kind cant be A_simpleVar!!!");
+        return NULL;
+    }
+    else if(pCurrent->kind == A_fieldVar)
+    {
+        return pCurrent->u.field.var;
+    }
+    else if(pCurrent->kind == A_subscriptVar)
+    {
+        return pCurrent->u.subscript.var;
+    }
+}
+
+void SetNext(A_var pCurrent, A_var pNext)
+{
+    if(pCurrent->kind == A_simpleVar)
+    {
+        fprintf(stdout, "error, kind cant be A_simpleVar!!!");
+        return;
+    }
+    else if(pCurrent->kind == A_fieldVar)
+    {
+        pCurrent->u.field.var = pNext;
+    }
+    else if(pCurrent->kind == A_subscriptVar)
+    {
+        pCurrent->u.subscript.var = pNext;
+    }
+}
+
+A_var LValueAction(A_var extension, A_var element)
+{
+    if(extension == NULL)
+    {
+        return element;
+    }
+
+    A_var pCurrent = extension;
+    A_var pNext = GetNext(pCurrent);
+
+    while( pNext != NULL)
+    {
+        pCurrent = pNext;
+        pNext = GetNext(pCurrent);
+    }
+
+    // at this time , pNext == NULL
+    SetNext(pCurrent, element);
+    return extension;
+}
+
+%}
+
+
 
 %start program
 
@@ -58,18 +144,18 @@ void yyerror(char *s)
 %%
 
 program
-    : exp       { absyn_root=$1; }
+    : exp       { absyn_root=$1; fprintf(stdout, "absyn_root = %x, exp\n", absyn_root); }
 
 exp
-    : INT
-    | STRING
-    | LValue
-    | NIL
+    : INT       { $$ = A_IntExp(EM_tokPos, $1); /*fprintf(stdout, "EM_tokPos = %d\n", EM_tokPos);*/ }
+    | STRING    { $$ = A_StringExp(EM_tokPos, $1); }
+    | LValue    { $$ = A_VarExp(EM_tokPos, $1); }
+    | NIL       { $$ = A_NilExp(EM_tokPos); }
     | MINUS INT
     | MINUS ID
     | LPAREN exps RPAREN 
     | LPAREN RPAREN 
-    | FunctionCall
+    | FunctionCall  { $$ = $1; }
     | Arithmetic
     | Comparison
     | exp AND exp
@@ -93,9 +179,17 @@ DeclarationSequence
     | DeclarationSequence Declaration
 
 Declaration
-    : TypeDeclaration
+    : TypeDeclarations
     | VarDeclaration
-    | FunctionDeclaration
+    | FunctionDeclarations
+
+TypeDeclarations
+    : TypeDeclaration
+    | TypeDeclarations TypeDeclaration
+
+FunctionDeclarations
+    : FunctionDeclaration
+    | FunctionDeclarations FunctionDeclaration
 
 TypeDeclaration
     : TYPE ID EQ OtherType
@@ -125,16 +219,16 @@ FunctionDeclaration
     | FUNCTION ID LPAREN TypeFields RPAREN COLON ID EQ exp
 
 LValue
-    : ID LValue_extension
+    : ID LValue_extension { $$ = LValueAction($2, A_SimpleVar(EM_tokPos, S_Symbol($1))); }
 
 LValue_extension
-    : %empty
-    | DOT ID LValue_extension
-    | LBRACK exp RBRACK LValue_extension
+    : %empty    { $$ = NULL; }
+    | DOT ID LValue_extension   { $$ = LValueAction($3, A_FieldVar(EM_tokPos, NULL, S_Symbol($2))); }
+    | LBRACK exp RBRACK LValue_extension    { $$ = LValueAction($4, A_SubscriptVar(EM_tokPos, NULL, $2)); }
 
 FunctionCall
-    : ID LPAREN RPAREN 
-    | ID LPAREN expList RPAREN 
+    : ID LPAREN RPAREN      { $$ = A_CallExp(EM_tokPos, S_Symbol($1), NULL); } 
+    | ID LPAREN expList RPAREN  { $$ = A_CallExp(EM_tokPos, S_Symbol($1), $3); }
 
 expList
     : exp

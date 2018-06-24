@@ -7,3 +7,4 @@ mkdir build
 cd build
 cmake ..
 make
+../build/parse ../test.tig

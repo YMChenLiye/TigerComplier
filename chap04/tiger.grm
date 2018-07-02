@@ -50,7 +50,7 @@ void yyerror(char *s)
   FUNCTION VAR TYPE 
 
 %type <var> LValue LValue_extension
-%type <exp> exp program FunctionCall
+%type <exp> exp program FunctionCall RecordCreation
 %type <dec> Declaration VarDeclaration
 %type <ty> OtherType
 %type <decList> DeclarationSequence
@@ -82,6 +82,10 @@ A_var GetNext(A_var pCurrent)
     {
         return pCurrent->u.subscript.var;
     }
+    else
+    {
+        fprintf(stdout, "error kind");
+    }
 }
 
 void SetNext(A_var pCurrent, A_var pNext)
@@ -98,6 +102,10 @@ void SetNext(A_var pCurrent, A_var pNext)
     else if(pCurrent->kind == A_subscriptVar)
     {
         pCurrent->u.subscript.var = pNext;
+    }
+    else
+    {
+        fprintf(stdout, "error kind");
     }
 }
 
@@ -160,7 +168,7 @@ exp
     | Comparison
     | exp AND exp
     | exp OR exp
-    | RecordCreation
+    | RecordCreation    { $$ = $1; }
     | ArrayCreation
     | LValue ASSIGN exp
     | IF exp THEN exp ELSE exp
@@ -231,8 +239,8 @@ FunctionCall
     | ID LPAREN expList RPAREN  { $$ = A_CallExp(EM_tokPos, S_Symbol($1), $3); }
 
 expList
-    : exp
-    | expList COMMA exp
+    : exp                   { $$ = A_ExpList($1, NULL); }
+    | expList COMMA exp     
 
 Arithmetic
     : exp PLUS exp
@@ -249,15 +257,15 @@ Comparison
     | exp GE exp
 
 RecordCreation
-    : ID LBRACE RBRACE
-    | ID LBRACE FieldAssignmentList RBRACE
+    : ID LBRACE RBRACE                      { $$ = A_RecordExp(EM_tokPos, S_Symbol($1), NULL); }
+    | ID LBRACE FieldAssignmentList RBRACE  { $$ = A_RecordExp(EM_tokPos, S_Symbol($1), $3); }
 
 FieldAssignmentList
-    : FieldAssignment
-    | FieldAssignmentList COMMA FieldAssignment
+    : FieldAssignment                       { $$ = A_EfieldList($1, NULL); }
+    | FieldAssignmentList COMMA FieldAssignment 
 
 FieldAssignment
-    : ID EQ exp
+    : ID EQ exp                             { $$ = A_Efield(S_Symbol($1), $3); }
 
 ArrayCreation
     : ID LBRACK exp RBRACK OF exp

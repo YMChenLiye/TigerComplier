@@ -1,0 +1,1 @@
+/usr/bin/gcc      CMakeFiles/parse.dir/errormsg.c.o CMakeFiles/parse.dir/parsetest.c.o CMakeFiles/parse.dir/util.c.o CMakeFiles/parse.dir/lex.yy.c.o CMakeFiles/parse.dir/y.tab.c.o  -o parse -rdynamic 

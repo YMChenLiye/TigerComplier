@@ -55,9 +55,10 @@ exp
     | STRING
     | LValue
     | NIL
+    | exp exps
     | MINUS INT
     | MINUS ID
-    | LPAREN exps RPAREN 
+    | LPAREN exp RPAREN 
     | LPAREN RPAREN 
     | FunctionCall
     | Arithmetic
@@ -72,10 +73,10 @@ exp
     | WHILE exp DO exp
     | FOR ID ASSIGN exp TO exp DO exp
     | BREAK
-    | LET DeclarationSequence IN exps END
+    | LET DeclarationSequence IN exp END
 
 exps
-    : exp
+    : SEMICOLON exp
     | exps SEMICOLON exp
 
 DeclarationSequence

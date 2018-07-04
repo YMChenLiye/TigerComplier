@@ -37,6 +37,7 @@ int main(int argc, char **argv)
     {
         fprintf(stdout,"print exp\n");
         pr_exp(stdout, root, 10);
+        fprintf(stdout, "\n");
     }
     else
     {

@@ -14,5 +14,5 @@ cd ..
 for file in ../testcase/*.tig
 do
     echo "test" $file
-    #build/parse $file
+    build/parse $file
 done

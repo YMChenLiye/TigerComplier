@@ -67,6 +67,24 @@ void yyerror(char *s)
 /* et cetera */
 
 %{
+
+#define ListAction(Type, list, element)\
+{\
+    if(list == NULL)\
+    {\
+        return element;\
+    }\
+    Type pCurrent = list;\
+    Type pNext = list->tail;\
+    while(pNext != NULL)\
+    {\
+        pCurrent = pNext;\
+        pNext = pNext->tail;\
+    }\
+    pCurrent->tail = element;\
+    return list;\
+}\
+
 A_var GetNext(A_var pCurrent)
 {
     if(pCurrent->kind == A_simpleVar)
@@ -132,122 +150,32 @@ A_var LValueAction(A_var extension, A_var element)
 
 A_expList ExpListAction(A_expList list, A_expList element)
 {
-    if(list == NULL)
-    {
-        return element;
-    }
-    A_expList pCurrent = list;
-    A_expList pNext = list->tail;
-
-    while(pNext != NULL)
-    {
-        pCurrent = pNext;
-        pNext = pNext->tail;
-    }
-    
-    pCurrent->tail = element;
-
-    return list;
+    ListAction(A_expList, list, element);
 }
 
 A_efieldList EfieldListAction(A_efieldList list, A_efieldList element)
 {
-    if(list == NULL)
-    {
-        return element;
-    }
-    A_efieldList pCurrent = list;
-    A_efieldList pNext = list->tail;
-
-    while(pNext != NULL)
-    {
-        pCurrent = pNext;
-        pNext = pNext->tail;
-    }
-    
-    pCurrent->tail = element;
-
-    return list;
+    ListAction(A_efieldList, list, element);
 }
 
 A_fieldList FieldListAction(A_fieldList list, A_fieldList element)
 {
-    if(list == NULL)
-    {
-        return element;
-    }
-    A_fieldList pCurrent = list;
-    A_fieldList pNext = list->tail;
-
-    while(pNext != NULL)
-    {
-        pCurrent = pNext;
-        pNext = pNext->tail;
-    }
-    
-    pCurrent->tail = element;
-
-    return list;
+    ListAction(A_fieldList, list, element);
 }
 
 A_nametyList NametyListAction(A_nametyList list, A_nametyList element)
 {
-    if(list == NULL)
-    {
-        return element;
-    }
-    A_nametyList pCurrent = list;
-    A_nametyList pNext = list->tail;
-
-    while(pNext != NULL)
-    {
-        pCurrent = pNext;
-        pNext = pNext->tail;
-    }
-    
-    pCurrent->tail = element;
-
-    return list;
+    ListAction(A_nametyList, list, element);
 }
 
 A_fundecList FundecListAction(A_fundecList list, A_fundecList element)
 {
-    if(list == NULL)
-    {
-        return element;
-    }
-    A_fundecList pCurrent = list;
-    A_fundecList pNext = list->tail;
-
-    while(pNext != NULL)
-    {
-        pCurrent = pNext;
-        pNext = pNext->tail;
-    }
-    
-    pCurrent->tail = element;
-
-    return list;
+    ListAction(A_fundecList, list, element);
 }
 
 A_decList DecListAction(A_decList list, A_decList element)
 {
-    if(list == NULL)
-    {
-        return element;
-    }
-    A_decList pCurrent = list;
-    A_decList pNext = list->tail;
-
-    while(pNext != NULL)
-    {
-        pCurrent = pNext;
-        pNext = pNext->tail;
-    }
-    
-    pCurrent->tail = element;
-
-    return list;
+    ListAction(A_decList, list, element);
 }
 
 %}

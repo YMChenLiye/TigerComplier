@@ -3,7 +3,7 @@
 #include "util.h"
 #include "slp.h"
 
-typedef struct table * Table_;
+typedef struct table* Table_;
 struct table
 {
     string id;

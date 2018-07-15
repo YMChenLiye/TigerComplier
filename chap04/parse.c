@@ -22,20 +22,21 @@ A_exp parse(string fname)
     fprintf(stdout, "iRet = %d\n", iRet);
     if (iRet == 0)
         return absyn_root;
-    else return NULL;
+    else
+        return NULL;
 }
 
 int main(int argc, char **argv)
 {
-    if (argc!=2)
+    if (argc != 2)
     {
-        fprintf(stderr,"usage: %s filename\n", argv[0]);
+        fprintf(stderr, "usage: %s filename\n", argv[0]);
         return (1);
     }
     A_exp root = parse(argv[1]);
-    if(root != NULL)
+    if (root != NULL)
     {
-        fprintf(stdout,"print exp\n");
+        fprintf(stdout, "print exp\n");
         pr_exp(stdout, root, 10);
         fprintf(stdout, "\n");
     }

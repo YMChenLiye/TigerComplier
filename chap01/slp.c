@@ -37,7 +37,7 @@ A_exp A_NumExp(int num)
 {
     A_exp e = checked_malloc(sizeof(*e));
     e->kind = A_numExp;
-    e->u.num  = num;
+    e->u.num = num;
 }
 
 A_exp A_OpExp(A_exp left, A_binop oper, A_exp right)

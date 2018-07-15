@@ -28,7 +28,8 @@ typedef struct A_nametyList_ *A_nametyList;
 typedef struct A_efield_ *A_efield;
 typedef struct A_efieldList_ *A_efieldList;
 
-typedef enum {
+typedef enum
+{
     A_plusOp,
     A_minusOp,
     A_timesOp,
@@ -41,8 +42,10 @@ typedef enum {
     A_geOp
 } A_oper;
 
-struct A_var_ {
-    enum {
+struct A_var_
+{
+    enum
+    {
         A_simpleVar,
         A_fieldVar,
         A_subscriptVar
@@ -50,19 +53,23 @@ struct A_var_ {
     A_pos pos;
     union {
         S_symbol simple;
-        struct {
+        struct
+        {
             A_var var;
             S_symbol sym;
         } field;
-        struct {
+        struct
+        {
             A_var var;
             A_exp exp;
         } subscript;
     } u;
 };
 
-struct A_exp_ {
-    enum {
+struct A_exp_
+{
+    enum
+    {
         A_varExp,
         A_nilExp,
         A_intExp,
@@ -85,49 +92,60 @@ struct A_exp_ {
         /* nil; - needs only the pos */
         int intt;
         string stringg;
-        struct {
+        struct
+        {
             S_symbol func;
             A_expList args;
         } call;
-        struct {
+        struct
+        {
             A_oper oper;
             A_exp left;
             A_exp right;
         } op;
-        struct {
+        struct
+        {
             S_symbol typ;
             A_efieldList fields;
         } record;
         A_expList seq;
-        struct {
+        struct
+        {
             A_var var;
             A_exp exp;
         } assign;
-        struct {
+        struct
+        {
             A_exp test, then, elsee;
         } iff; /* elsee is optional */
-        struct {
+        struct
+        {
             A_exp test, body;
         } whilee;
-        struct {
+        struct
+        {
             S_symbol var;
             A_exp lo, hi, body;
             bool escape;
         } forr;
         /* breakk; - need only the pos */
-        struct {
+        struct
+        {
             A_decList decs;
             A_exp body;
         } let;
-        struct {
+        struct
+        {
             S_symbol typ;
             A_exp size, init;
         } array;
     } u;
 };
 
-struct A_dec_ {
-    enum {
+struct A_dec_
+{
+    enum
+    {
         A_functionDec,
         A_varDec,
         A_typeDec
@@ -136,7 +154,8 @@ struct A_dec_ {
     union {
         A_fundecList function;
         /* escape may change after the initial declaration */
-        struct {
+        struct
+        {
             S_symbol var;
             S_symbol typ;
             A_exp init;
@@ -146,8 +165,10 @@ struct A_dec_ {
     } u;
 };
 
-struct A_ty_ {
-    enum {
+struct A_ty_
+{
+    enum
+    {
         A_nameTy,
         A_recordTy,
         A_arrayTy
@@ -162,20 +183,24 @@ struct A_ty_ {
 
 /* Linked lists and nodes of lists */
 
-struct A_field_ {
+struct A_field_
+{
     S_symbol name, typ;
     A_pos pos;
     bool escape;
 };
-struct A_fieldList_ {
+struct A_fieldList_
+{
     A_field head;
     A_fieldList tail;
 };
-struct A_expList_ {
+struct A_expList_
+{
     A_exp head;
     A_expList tail;
 };
-struct A_fundec_ {
+struct A_fundec_
+{
     A_pos pos;
     S_symbol name;
     A_fieldList params;
@@ -183,27 +208,33 @@ struct A_fundec_ {
     A_exp body;
 };
 
-struct A_fundecList_ {
+struct A_fundecList_
+{
     A_fundec head;
     A_fundecList tail;
 };
-struct A_decList_ {
+struct A_decList_
+{
     A_dec head;
     A_decList tail;
 };
-struct A_namety_ {
+struct A_namety_
+{
     S_symbol name;
     A_ty ty;
 };
-struct A_nametyList_ {
+struct A_nametyList_
+{
     A_namety head;
     A_nametyList tail;
 };
-struct A_efield_ {
+struct A_efield_
+{
     S_symbol name;
     A_exp exp;
 };
-struct A_efieldList_ {
+struct A_efieldList_
+{
     A_efield head;
     A_efieldList tail;
 };

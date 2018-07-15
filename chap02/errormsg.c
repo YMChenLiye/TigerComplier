@@ -10,13 +10,17 @@ static string fileName = "";
 
 static int lineNum = 1;
 
-int EM_tokPos = 0;      //错误token开始的位置
+int EM_tokPos = 0;  //错误token开始的位置
 
-extern FILE * yyin;
+extern FILE* yyin;
 
-typedef struct intList { int i; struct intList* rest; } * IntList;
+typedef struct intList
+{
+    int i;
+    struct intList* rest;
+} * IntList;
 
-static IntList intList(int i , IntList rest)
+static IntList intList(int i, IntList rest)
 {
     IntList L = checked_malloc(sizeof(*L));
     L->i = i;
@@ -32,23 +36,21 @@ void EM_newline(void)
     linePos = intList(EM_tokPos, linePos);
 }
 
-void EM_error(int pos, char *message, ...)
+void EM_error(int pos, char* message, ...)
 {
     va_list ap;
     IntList lines = linePos;
     int num = lineNum;
 
     anyErrors = true;
-    while(lines && lines->i >= pos)
+    while (lines && lines->i >= pos)
     {
         lines = lines->rest;
         num--;
     }
 
-    if(fileName)
-        fprintf(stderr, "%s:", fileName);
-    if(lines)
-        fprintf(stderr, "%d.%d: ", num, pos - lines->i);
+    if (fileName) fprintf(stderr, "%s:", fileName);
+    if (lines) fprintf(stderr, "%d.%d: ", num, pos - lines->i);
 
     va_start(ap, message);
     vfprintf(stderr, message, ap);
@@ -63,7 +65,7 @@ void EM_reset(string fname)
     lineNum = 1;
     linePos = intList(0, NULL);
     yyin = fopen(fname, "r");
-    if(!yyin)
+    if (!yyin)
     {
         EM_error(0, "cannot open");
         exit(1);

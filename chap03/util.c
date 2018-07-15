@@ -3,10 +3,10 @@
 #include <string.h>
 #include "util.h"
 
-void * checked_malloc(int len)
+void* checked_malloc(int len)
 {
-    void *p = malloc(len);
-    if(!p)
+    void* p = malloc(len);
+    if (!p)
     {
         fprintf(stderr, "\nRun out of memory!\n");
         exit(1);

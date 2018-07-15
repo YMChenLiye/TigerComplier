@@ -24,10 +24,7 @@ void *TAB_look(TAB_table t, void *key);
  * This may expose another binding for the same key, if there was one. */
 void *TAB_pop(TAB_table t);
 
-
 /* Call "show" on every "key"->"value" pair in the table,
  *  including shadowed bindings, in order from the most
  *  recent binding of any key to the oldest binding in the table */
 void TAB_dump(TAB_table t, void (*show)(void *key, void *value));
-
-

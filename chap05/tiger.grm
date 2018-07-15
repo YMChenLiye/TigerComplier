@@ -200,7 +200,7 @@ A_decList DecListAction(A_decList list, A_decList element)
 %%
 
 program
-    : exp       { absyn_root=$1; fprintf(stdout, "absyn_root = %x, exp\n", absyn_root); }
+    : exp       { absyn_root=$1; }
 
 exp
     : INT       { $$ = A_IntExp(EM_tokPos, $1); /*fprintf(stdout, "EM_tokPos = %d\n", EM_tokPos);*/ }

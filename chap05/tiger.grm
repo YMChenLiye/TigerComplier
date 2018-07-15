@@ -211,7 +211,7 @@ exp
     | MINUS INT { $$ = A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), A_IntExp(EM_tokPos, $2)); }
     | MINUS LValue  { $$ = A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), A_VarExp(EM_tokPos, $2)); }
     | LPAREN exp RPAREN             { $$ = $2; }
-    | LPAREN RPAREN                 { $$ = NULL; }
+    | LPAREN RPAREN                 { $$ = A_SeqExp(EM_tokPos,NULL); }
     | FunctionCall  { $$ = $1; }
     | Arithmetic    { $$ = $1; }
     | Comparison    { $$ = $1; }

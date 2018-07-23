@@ -86,7 +86,8 @@ struct expty transExp(S_table venv, S_table tenv, A_exp a)
             struct expty exp;
             S_beginScope(venv);
             S_beginScope(tenv);
-            for (A_decList d = a->u.let.decs; d != NULL; d = d->tail)
+            A_decList d;
+            for (d = a->u.let.decs; d != NULL; d = d->tail)
             {
                 transDec(venv, tenv, d->head);
             }

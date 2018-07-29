@@ -18,5 +18,13 @@ void transDec(S_table venv, S_table tenv, A_dec d);
 Ty_ty transTy(S_table tenv, A_ty a);
 
 Ty_ty actual_ty(Ty_ty type);
+Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params);
+Ty_fieldList makeFieldTys(S_table tenv, A_fieldList fields);
+bool is_equal_ty(Ty_ty leftType, Ty_ty rightType);
 
 void SEM_transProg(A_exp exp);
+
+struct expty transExp_callExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_opExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_letExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_recordExp(S_table venv, S_table tenv, A_exp a);

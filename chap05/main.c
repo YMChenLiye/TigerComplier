@@ -22,8 +22,8 @@ int main(int argc, char **argv)
         fprintf(stdout, "parse error\n");
         return -1;
     }
-    pr_exp(stdout, root, 10);
-    fprintf(stdout, "pr_exp done\n");
+    //pr_exp(stdout, root, 10);
+    //fprintf(stdout, "pr_exp done\n");
     // Semantic Analysis
     SEM_transProg(root);
 

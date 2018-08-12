@@ -26,5 +26,12 @@ void SEM_transProg(A_exp exp);
 
 struct expty transExp_callExp(S_table venv, S_table tenv, A_exp a);
 struct expty transExp_opExp(S_table venv, S_table tenv, A_exp a);
-struct expty transExp_letExp(S_table venv, S_table tenv, A_exp a);
 struct expty transExp_recordExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_seqExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_assignExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_ifExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_whileExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_forExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_breakExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_letExp(S_table venv, S_table tenv, A_exp a);
+struct expty transExp_arrayExp(S_table venv, S_table tenv, A_exp a);

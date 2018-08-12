@@ -23,6 +23,8 @@ add_custom_command(
 
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}")
 
+add_compile_options(-g)
+
 # 指定生成目标
 add_executable(parse ${DIR_SRCS} lex.yy.c y.tab.c)
 

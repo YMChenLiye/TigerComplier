@@ -194,11 +194,15 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             while (funList)
             {
                 A_fundec f = funList->head;
-                Ty_ty resultTy = S_look(tenv, f->result);
-                if (!resultTy)
+                Ty_ty resultTy = Ty_Void();
+                if (f->result)
                 {
-                    EM_error(f->pos, "undefined result type");
-                    return;
+                    resultTy = S_look(tenv, f->result);
+                    if (!resultTy)
+                    {
+                        EM_error(f->pos, "undefined result type");
+                        return;
+                    }
                 }
                 Ty_tyList formalTys = makeFormalTyList(tenv, f->params);
                 S_enter(venv, f->name, E_FunEntry(formalTys, resultTy));
@@ -212,7 +216,11 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                         S_enter(venv, l->head->name, E_VarEntry(t->head));
                     }
                 }
-                transExp(venv, tenv, f->body);
+                struct expty body = transExp(venv, tenv, f->body);
+                if (!is_equal_ty(resultTy, body.ty))
+                {
+                    EM_error(f->pos, "function result type error");
+                }
                 S_endScope(venv);
 
                 funList = funList->tail;
@@ -378,19 +386,19 @@ struct expty transExp_callExp(S_table venv, S_table tenv, A_exp a)
             if (!is_equal_ty(argsType->head, argsTy.ty))
             {
                 EM_error(a->pos, "args type not match");
-                return expTy(NULL, Ty_Int());
+                return expTy(NULL, Ty_Void());
             }
         }
         if (args != NULL || argsType != NULL)
         {
             EM_error(a->pos, "args num not match");
+            return expTy(NULL, Ty_Void());
         }
-        else
-        {
-            return expTy(NULL, actual_ty(x->u.fun.result));
-        }
+
+        // check result
+        return expTy(NULL, actual_ty(x->u.fun.result));
     }
-    return expTy(NULL, Ty_Int());
+    return expTy(NULL, Ty_Void());
 }
 
 struct expty transExp_opExp(S_table venv, S_table tenv, A_exp a)

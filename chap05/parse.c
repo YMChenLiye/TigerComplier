@@ -19,7 +19,7 @@ A_exp parse(string fname)
 {
     EM_reset(fname);
     int iRet = yyparse();
-    fprintf(stdout, "iRet = %d\n", iRet);
+    fprintf(stdout, "yyparse, iRet = %d\n", iRet);
     if (iRet == 0)
         return absyn_root;
     else

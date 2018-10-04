@@ -191,9 +191,9 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         case A_functionDec:
         {
             A_fundecList funList = d->u.function;
-            A_fundec f = funList->head;
-            while (f)
+            while (funList)
             {
+                A_fundec f = funList->head;
                 Ty_ty resultTy = S_look(tenv, f->result);
                 if (!resultTy)
                 {
@@ -216,7 +216,6 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 S_endScope(venv);
 
                 funList = funList->tail;
-                f = funList->head;
             }
             return;
         }

@@ -3,6 +3,8 @@
 #include "errormsg.h"
 #include "absyn.h"
 #include "env.h"
+#include <stdio.h>
+#include "prabsyn.h"
 
 struct expty expTy(Tr_exp exp, Ty_ty ty)
 {
@@ -178,7 +180,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         case A_typeDec:
         {
             A_nametyList types = d->u.type;
-            while (types->head)
+            while (types)
             {
                 S_enter(tenv, types->head->name,
                         transTy(tenv, types->head->ty));
@@ -193,7 +195,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
             while (f)
             {
                 Ty_ty resultTy = S_look(tenv, f->result);
-                if(!resultTy)
+                if (!resultTy)
                 {
                     EM_error(f->pos, "undefined result type");
                     return;
@@ -397,7 +399,20 @@ struct expty transExp_opExp(S_table venv, S_table tenv, A_exp a)
     A_oper oper = a->u.op.oper;
     struct expty left = transExp(venv, tenv, a->u.op.left);
     struct expty right = transExp(venv, tenv, a->u.op.right);
-    if (oper == A_plusOp)
+    /*
+        A_plusOp,
+    A_minusOp,
+    A_timesOp,
+    A_divideOp,
+    A_eqOp,
+    A_neqOp,
+    A_ltOp,
+    A_leOp,
+    A_gtOp,
+    A_geOp
+    */
+    // 暂时只支持int类型,后续加上string类型
+    if (oper >= A_plusOp && oper <= A_geOp)
     {
         if (left.ty->kind != Ty_int)
         {
@@ -409,12 +424,28 @@ struct expty transExp_opExp(S_table venv, S_table tenv, A_exp a)
         }
         return expTy(NULL, Ty_Int());
     }
+    else
+    {
+        EM_error(a->u.op.left->pos, "cant know oper type %d", oper);
+        assert(0);
+        return expTy(NULL, Ty_Int());
+    }
 }
 
 struct expty transExp_recordExp(S_table venv, S_table tenv, A_exp a)
 {
     // todo
-    return expTy(NULL, Ty_Int());
+    Ty_ty typ = S_look(tenv, a->u.record.typ);
+    if (!typ)
+    {
+        EM_error(a->pos, "undefined type");
+        return expTy(NULL, Ty_Record(NULL));
+    }
+    if (typ->kind != Ty_record)
+    {
+        EM_error(a->pos, "%s is not a record type", S_name(a->u.record.typ));
+    }
+    return expTy(NULL, typ);
 }
 
 struct expty transExp_seqExp(S_table venv, S_table tenv, A_exp a)
@@ -477,6 +508,21 @@ struct expty transExp_whileExp(S_table venv, S_table tenv, A_exp a)
 struct expty transExp_forExp(S_table venv, S_table tenv, A_exp a)
 {
     // todo
+    S_beginScope(venv);
+    S_enter(venv, a->u.forr.var, E_VarEntry(Ty_Int()));
+
+    struct expty lo = transExp(venv, tenv, a->u.forr.lo);
+    if (lo.ty->kind != Ty_int)
+    {
+        EM_error(a->u.forr.lo->pos, "integer required");
+    }
+    struct expty hi = transExp(venv, tenv, a->u.forr.hi);
+    if (hi.ty->kind != Ty_int)
+    {
+        EM_error(a->u.forr.hi->pos, "integer required");
+    }
+    struct expty body = transExp(venv, tenv, a->u.forr.body);
+    S_endScope(venv);
     return expTy(NULL, Ty_Void());
 }
 

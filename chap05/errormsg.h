@@ -4,6 +4,7 @@
 #include "util.h"
 
 extern bool EM_anyErrors;
+extern bool anyErrors;
 
 void EM_newline(void);
 

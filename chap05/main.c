@@ -26,6 +26,11 @@ int main(int argc, char **argv)
     // fprintf(stdout, "pr_exp done\n");
     // Semantic Analysis
     SEM_transProg(root);
+    if (anyErrors)
+    {
+        fprintf(stdout, "Error!!! filename: %s \n", argv[1]);
+        return -1;
+    }
 
     // fprintf(stdout, "print exp\n");
     // pr_exp(stdout, root, 10);

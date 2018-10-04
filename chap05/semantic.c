@@ -156,13 +156,14 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         case A_varDec:
         {
             struct expty e = transExp(venv, tenv, d->u.var.init);
+            // 是否指定了类型
             if (d->u.var.typ != NULL)
             {
                 // check type
                 Ty_ty ty = S_look(tenv, d->u.var.typ);
                 if (ty != NULL)
                 {
-                    if (actual_ty(ty) != e.ty)
+                    if (e.ty->kind != Ty_nil && actual_ty(ty) != e.ty)
                     {
                         EM_error(d->pos, "type should be same!");
                         return;
@@ -171,6 +172,16 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 else
                 {
                     EM_error(d->pos, "no type:%s", S_name(d->u.var.typ));
+                    return;
+                }
+            }
+            else
+            {
+                // 没有指定类型
+                // 不允许nil
+                if (e.ty->kind == Ty_nil)
+                {
+                    EM_error(d->pos, "not specify type, cant be nil");
                     return;
                 }
             }
@@ -398,7 +409,11 @@ struct expty transExp_callExp(S_table venv, S_table tenv, A_exp a)
         // check result
         return expTy(NULL, actual_ty(x->u.fun.result));
     }
-    return expTy(NULL, Ty_Void());
+    else
+    {
+        EM_error(a->pos, "not find function define");
+        return expTy(NULL, Ty_Void());
+    }
 }
 
 struct expty transExp_opExp(S_table venv, S_table tenv, A_exp a)
@@ -406,6 +421,8 @@ struct expty transExp_opExp(S_table venv, S_table tenv, A_exp a)
     A_oper oper = a->u.op.oper;
     struct expty left = transExp(venv, tenv, a->u.op.left);
     struct expty right = transExp(venv, tenv, a->u.op.right);
+    // 如果是record类型，还可以和nil比较
+    // todo
     /*
         A_plusOp,
     A_minusOp,

@@ -1,0 +1,28 @@
+test10.tig:1:/* error : body of while not unit */
+test11.tig:1:/* error hi expr is not int, and index variable erroneously assigned to.  */
+test13.tig:1:/* error: comparison of incompatible types */
+test14.tig:1:/* error : compare rec with array */
+test15.tig:1:/* error : if-then returns non unit */
+test16.tig:1:/* error: mutually recursive types thet do not pass through record or array */
+test17.tig:1:/* error: definition of recursive types is interrupted */
+test18.tig:1:/* error : definition of recursive functions is interrupted */
+test19.tig:1:/* error : second function uses variables local to the first one, undeclared variable */
+test20.tig:1:/* error: undeclared variable i */
+test21.tig:1:/* error : procedure returns value  and procedure is used in arexpr */
+test22.tig:1:/* error : field not in record type */
+test23.tig:1:/* error : type mismatch */
+test24.tig:1:/* error : variable not array */
+test25.tig:1:/* error : variable not record */
+test26.tig:1:/* error : integer required */
+test28.tig:1:/* error : different record types */
+test29.tig:1:/* error : different array types */
+test31.tig:1:/* error : type constraint and init value differ */
+test32.tig:1:/* error : initializing exp and array type differ */
+test33.tig:1:/* error : unknown type */
+test34.tig:1:/* error : formals and actuals have different types */
+test35.tig:1:/* error : formals are more then actuals */
+test36.tig:1:/* error : formals are fewer then actuals */
+test40.tig:1:/* error : procedure returns value */
+test45.tig:1:/* error: initializing nil expressions not constrained by record type */
+test49.tig:1:/* error: syntax error, nil should not be preceded by type-id.  */
+test9.tig:1:/* error : types of then - else differ */

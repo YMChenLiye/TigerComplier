@@ -564,12 +564,12 @@ struct expty transExp_arrayExp(S_table venv, S_table tenv, A_exp a)
         return expTy(NULL, Ty_Void());
     }
 
-    if (!is_equal_ty(typ, init.ty))
+    if (!is_equal_ty(typ->u.array, init.ty))
     {
         EM_error(a->u.array.init->pos,
                  "initialisation expression should be same type");
         return expTy(NULL, Ty_Void());
     }
 
-    return expTy(NULL, Ty_Void());
+    return expTy(NULL, typ);
 }

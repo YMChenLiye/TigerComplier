@@ -174,6 +174,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                     EM_error(d->pos, "no type:%s", S_name(d->u.var.typ));
                     return;
                 }
+                S_enter(venv, d->u.var.var, E_VarEntry(ty));
             }
             else
             {
@@ -184,8 +185,8 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                     EM_error(d->pos, "not specify type, cant be nil");
                     return;
                 }
+                S_enter(venv, d->u.var.var, E_VarEntry(e.ty));
             }
-            S_enter(venv, d->u.var.var, E_VarEntry(e.ty));
             return;
         }
         case A_typeDec:
@@ -438,6 +439,25 @@ struct expty transExp_opExp(S_table venv, S_table tenv, A_exp a)
     // 暂时只支持int类型,后续加上string类型
     if (oper >= A_plusOp && oper <= A_geOp)
     {
+        if (left.ty->kind == Ty_record && right.ty->kind == Ty_nil)
+        {
+            return expTy(NULL, Ty_Int());
+        }
+        if (left.ty->kind != right.ty->kind)
+        {
+            EM_error(a->pos, "type not equal, left = %d, right = %d",
+                     left.ty->kind, right.ty->kind);
+            return expTy(NULL, Ty_Void());
+        }
+
+        if (left.ty->kind != Ty_int && left.ty->kind != Ty_string)
+        {
+            EM_error(a->pos, "only support int / string, left = %d, right = %d",
+                     left.ty->kind, right.ty->kind);
+            return expTy(NULL, Ty_Void());
+        }
+
+        /*
         if (left.ty->kind != Ty_int)
         {
             EM_error(a->u.op.left->pos, "integer required");
@@ -446,6 +466,7 @@ struct expty transExp_opExp(S_table venv, S_table tenv, A_exp a)
         {
             EM_error(a->u.op.right->pos, "integer required");
         }
+        */
         return expTy(NULL, Ty_Int());
     }
     else
@@ -515,7 +536,7 @@ struct expty transExp_ifExp(S_table venv, S_table tenv, A_exp a)
                      "if-then-else branches must return same type");
         }
     }
-    return expTy(NULL, Ty_Void());
+    return expTy(NULL, then.ty);
 }
 
 struct expty transExp_whileExp(S_table venv, S_table tenv, A_exp a)

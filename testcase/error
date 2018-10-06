@@ -22,7 +22,10 @@ test33.tig:1:/* error : unknown type */
 test34.tig:1:/* error : formals and actuals have different types */
 test35.tig:1:/* error : formals are more then actuals */
 test36.tig:1:/* error : formals are fewer then actuals */
+test38.tig:1:/* error : This is illegal, since there are two types with the same name
+test39.tig:1:/* error: This is illegal, since there are two functions with the same name
 test40.tig:1:/* error : procedure returns value */
+test43.tig:1:/* error: initialize with unit and causing type mismatch in addition */
 test45.tig:1:/* error: initializing nil expressions not constrained by record type */
 test49.tig:1:/* error: syntax error, nil should not be preceded by type-id.  */
 test9.tig:1:/* error : types of then - else differ */

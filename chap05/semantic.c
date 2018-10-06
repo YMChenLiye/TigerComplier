@@ -156,6 +156,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         case A_varDec:
         {
             struct expty e = transExp(venv, tenv, d->u.var.init);
+            e.ty = actual_ty(e.ty);
             // 是否指定了类型
             if (d->u.var.typ != NULL)
             {
@@ -191,11 +192,25 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         }
         case A_typeDec:
         {
+            // header first: for recursive possible
             A_nametyList types = d->u.type;
             while (types)
             {
                 S_enter(tenv, types->head->name,
-                        transTy(tenv, types->head->ty));
+                        Ty_Name(types->head->name, NULL));
+                types = types->tail;
+            }
+
+            types = d->u.type;
+            while (types)
+            {
+                // 判断是否有环
+                // todo
+                // update
+                Ty_ty t = transTy(tenv, types->head->ty);
+                Ty_ty type = S_look(tenv, types->head->name);
+                type->u.name.ty = t;
+
                 types = types->tail;
             }
             return;
@@ -243,7 +258,10 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 struct expty body = transExp(venv, tenv, f->body);
                 if (!is_equal_ty(resultTy, body.ty))
                 {
-                    EM_error(f->pos, "function result type error");
+                    EM_error(f->pos,
+                             "function result type error, resultTy = %d, "
+                             "bodyTy = %d, function name = %s",
+                             resultTy->kind, body.ty->kind, S_name(f->name));
                 }
                 S_endScope(venv);
 
@@ -501,7 +519,7 @@ struct expty transExp_recordExp(S_table venv, S_table tenv, A_exp a)
         EM_error(a->pos, "undefined type");
         return expTy(NULL, Ty_Record(NULL));
     }
-    if (typ->kind != Ty_record)
+    if (actual_ty(typ)->kind != Ty_record)
     {
         EM_error(a->pos, "%s is not a record type", S_name(a->u.record.typ));
     }
@@ -624,10 +642,18 @@ struct expty transExp_arrayExp(S_table venv, S_table tenv, A_exp a)
         return expTy(NULL, Ty_Void());
     }
 
-    if (!is_equal_ty(typ->u.array, init.ty))
+    if (actual_ty(typ)->kind != Ty_array)
+    {
+        EM_error(a->pos, "not a array type");
+        return expTy(NULL, Ty_Void());
+    }
+
+    if (!is_equal_ty(actual_ty(typ)->u.array, init.ty))
     {
         EM_error(a->u.array.init->pos,
-                 "initialisation expression should be same type");
+                 "initialisation expression should be same type, array type = "
+                 "%d, init type = %d",
+                 typ->u.array->kind, init.ty->kind);
         return expTy(NULL, Ty_Void());
     }
 

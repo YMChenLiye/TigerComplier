@@ -23,5 +23,6 @@ A_exp parse(string fname)
     if (iRet == 0)
         return absyn_root;
     else
-        return NULL;
+        return absyn_root;
+    return NULL;
 }

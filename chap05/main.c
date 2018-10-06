@@ -7,7 +7,18 @@
 #include "prabsyn.h"
 #include "semantic.h"
 
-int main(int argc, char **argv)
+void DoError(char* filename)
+{
+    fprintf(stdout, "Error!!! filename: %s \n", filename);
+    FILE* ferr = fopen("errfile", "ab+");
+    if (ferr)
+    {
+        fputs(filename, ferr);
+        fputs("\n", ferr);
+    }
+}
+
+int main(int argc, char** argv)
 {
     if (argc != 2)
     {
@@ -20,6 +31,7 @@ int main(int argc, char **argv)
     if (root == NULL)
     {
         fprintf(stdout, "parse error\n");
+        DoError(argv[1]);
         return -1;
     }
     // pr_exp(stdout, root, 10);
@@ -28,7 +40,7 @@ int main(int argc, char **argv)
     SEM_transProg(root);
     if (anyErrors)
     {
-        fprintf(stdout, "Error!!! filename: %s \n", argv[1]);
+        DoError(argv[1]);
         return -1;
     }
 

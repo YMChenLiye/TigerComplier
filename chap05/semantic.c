@@ -202,6 +202,7 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         }
         case A_functionDec:
         {
+            // header first: for recursive possible
             A_fundecList funList = d->u.function;
             while (funList)
             {
@@ -218,6 +219,17 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 }
                 Ty_tyList formalTys = makeFormalTyList(tenv, f->params);
                 S_enter(venv, f->name, E_FunEntry(formalTys, resultTy));
+                funList = funList->tail;
+            }
+
+            // Do Body
+            funList = d->u.function;
+            while (funList)
+            {
+                A_fundec f = funList->head;
+                E_enventry funEntry = S_look(venv, f->name);
+                Ty_tyList formalTys = funEntry->u.fun.formals;
+                Ty_ty resultTy = funEntry->u.fun.result;
                 S_beginScope(venv);
                 {
                     A_fieldList l;

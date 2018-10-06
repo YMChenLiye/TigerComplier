@@ -89,8 +89,9 @@ nil         { adjust(); return NIL; }
 
 <COMMENT_STATE>
 {
-    .       { adjust();}
     "*/"    { adjust(); BEGIN(INITIAL); }
+    [^\n]       { adjust();}
+	\n          { adjust(); EM_newline(); }
 }
 
     /* String literal */

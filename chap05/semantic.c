@@ -257,7 +257,9 @@ Ty_ty transTy(S_table tenv, A_ty a)
             else
             {
                 EM_error(a->pos, "undefined type %s", S_name(a->u.name));
+                return Ty_Void();
             }
+            break;
         }
         case A_recordTy:
         {
@@ -275,6 +277,7 @@ Ty_ty transTy(S_table tenv, A_ty a)
             {
                 EM_error(a->pos, "undefined type %s", S_name(a->u.array));
             }
+            break;
         }
     }
     assert(0);

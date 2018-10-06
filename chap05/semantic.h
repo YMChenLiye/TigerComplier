@@ -21,6 +21,7 @@ Ty_ty actual_ty(Ty_ty type);
 Ty_tyList makeFormalTyList(S_table tenv, A_fieldList params);
 Ty_fieldList makeFieldTys(S_table tenv, A_fieldList fields);
 bool is_equal_ty(Ty_ty leftType, Ty_ty rightType);
+bool is_Type_Cycle(S_table tenv, Ty_ty type);
 
 void SEM_transProg(A_exp exp);
 

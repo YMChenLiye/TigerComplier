@@ -210,6 +210,11 @@ void transDec(S_table venv, S_table tenv, A_dec d)
                 Ty_ty t = transTy(tenv, types->head->ty);
                 Ty_ty type = S_look(tenv, types->head->name);
                 type->u.name.ty = t;
+                if (is_Type_Cycle(tenv, type))
+                {
+                    EM_error(d->pos, "type cycle");
+                    return;
+                }
 
                 types = types->tail;
             }
@@ -407,6 +412,28 @@ bool is_equal_ty(Ty_ty leftType, Ty_ty rightType)
     {
         return leftType->kind == rightType->kind;
     }
+}
+
+bool is_Type_Cycle(S_table tenv, Ty_ty type)
+{
+    if (!type || type->kind != Ty_name || type->u.name.ty->kind != Ty_name)
+    {
+        return false;
+    }
+    Ty_ty typenew = type->u.name.ty;
+    while (typenew)
+    {
+        if (typenew->kind != Ty_name)
+        {
+            return false;
+        }
+        if (typenew == type)
+        {
+            return true;
+        }
+        typenew = typenew->u.name.ty;
+    }
+    return false;
 }
 
 void SEM_transProg(A_exp exp)

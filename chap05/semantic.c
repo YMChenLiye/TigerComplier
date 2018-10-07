@@ -194,8 +194,16 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         {
             // header first: for recursive possible
             A_nametyList types = d->u.type;
+            S_symbol currentSymbol = NULL;
             while (types)
             {
+                // 不允许定义同样的符号
+                if (types->head->name == currentSymbol)
+                {
+                    EM_error(d->pos, "same symbol name");
+                }
+                currentSymbol = types->head->name;
+
                 S_enter(tenv, types->head->name,
                         Ty_Name(types->head->name, NULL));
                 types = types->tail;
@@ -224,9 +232,18 @@ void transDec(S_table venv, S_table tenv, A_dec d)
         {
             // header first: for recursive possible
             A_fundecList funList = d->u.function;
+            S_symbol currentSymbol = NULL;
             while (funList)
             {
                 A_fundec f = funList->head;
+
+                // 不允许定义同样的符号
+                if (f->name == currentSymbol)
+                {
+                    EM_error(d->pos, "same symbol name");
+                }
+                currentSymbol = f->name;
+
                 Ty_ty resultTy = Ty_Void();
                 if (f->result)
                 {

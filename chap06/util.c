@@ -20,3 +20,11 @@ string String(char* s)
     strcpy(p, s);
     return p;
 }
+
+U_boolList U_BoolList(bool head, U_boolList tail)
+{
+    U_boolList l = checked_malloc(sizeof(*l));
+    l->head = head;
+    l->tail = tail;
+    return l;
+}
